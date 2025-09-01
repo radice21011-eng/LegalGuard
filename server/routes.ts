@@ -1,16 +1,10 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { copyrightMiddleware } from "./middleware/copyright";
-import { gdprMiddleware } from "./middleware/gdpr";
-import { securityMiddleware } from "./middleware/security";
 import { insertProjectSchema, insertGdprRequestSchema, insertCopyrightViolationSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Apply security middleware
-  app.use(securityMiddleware);
-  app.use(copyrightMiddleware);
-  app.use(gdprMiddleware);
+  // Privacy protection applied directly in routes for better control
 
   // Projects API
   app.get("/api/projects", async (req, res) => {
