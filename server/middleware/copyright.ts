@@ -59,16 +59,18 @@ export async function copyrightMiddleware(req: Request, res: Response, next: Nex
       });
     }
     
-    // Enhanced copyright headers with dynamic watermarking
+    // Enhanced copyright headers with dynamic watermarking (only if headers not sent)
     const copyrightToken = generateCopyrightToken();
-    res.setHeader("X-Copyright", "© 2025 Ervin Remus Radosavlevici. All Rights Reserved.");
-    res.setHeader("X-Owner", "Ervin Remus Radosavlevici <ervin210@icloud.com>");
-    res.setHeader("X-NDA-Protected", "true");
-    res.setHeader("X-Legal-Notice", "Unauthorized use, reproduction, or distribution is prohibited");
-    res.setHeader("X-Copyright-Token", copyrightToken);
-    res.setHeader("X-Watermark", "ERR_PROTECTED_2025");
-    res.setHeader("X-License", "Proprietary - NDA Required");
-    res.setHeader("X-Legal-Jurisdiction", "International Copyright Law");
+    if (!res.headersSent) {
+      res.setHeader("X-Copyright", "© 2025 Ervin Remus Radosavlevici. All Rights Reserved.");
+      res.setHeader("X-Owner", "Ervin Remus Radosavlevici <ervin210@icloud.com>");
+      res.setHeader("X-NDA-Protected", "true");
+      res.setHeader("X-Legal-Notice", "Unauthorized use, reproduction, or distribution is prohibited");
+      res.setHeader("X-Copyright-Token", copyrightToken);
+      res.setHeader("X-Watermark", "ERR_PROTECTED_2025");
+      res.setHeader("X-License", "Proprietary - NDA Required");
+      res.setHeader("X-Legal-Jurisdiction", "International Copyright Law");
+    }
     
     // Log all requests for audit trail
     await storage.createAuditLog({
@@ -87,9 +89,11 @@ export async function copyrightMiddleware(req: Request, res: Response, next: Nex
     next();
   } catch (error) {
     console.error("Copyright middleware error:", error);
-    // Even on error, maintain copyright protection
-    res.setHeader("X-Copyright", "© 2025 Ervin Remus Radosavlevici. All Rights Reserved.");
-    res.setHeader("X-Owner", "Ervin Remus Radosavlevici <ervin210@icloud.com>");
+    // Even on error, maintain copyright protection (only if headers not sent)
+    if (!res.headersSent) {
+      res.setHeader("X-Copyright", "© 2025 Ervin Remus Radosavlevici. All Rights Reserved.");
+      res.setHeader("X-Owner", "Ervin Remus Radosavlevici <ervin210@icloud.com>");
+    }
     next();
   }
 }

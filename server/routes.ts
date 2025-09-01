@@ -106,7 +106,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/copyright/status", async (req, res) => {
     try {
-      const ipAddress = req.ip;
+      const ipAddress = req.ip || 'unknown';
       const isBlocked = await storage.isCopyrightViolator(ipAddress);
       res.json({ blocked: isBlocked });
     } catch (error) {

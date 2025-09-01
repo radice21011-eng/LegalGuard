@@ -24,20 +24,22 @@ export async function gdprMiddleware(req: Request, res: Response, next: NextFunc
   try {
     const gdprToken = generateGdprToken();
     
-    // Enhanced GDPR compliance headers
-    res.setHeader("X-GDPR-Compliant", "true");
-    res.setHeader("X-Data-Protection", "EU-GDPR-2025-ENHANCED");
-    res.setHeader("X-Privacy-Policy", "/legal/privacy");
-    res.setHeader("X-Cookie-Policy", "essential-only");
-    res.setHeader("X-DPO-Contact", DPO_CONTACT);
-    res.setHeader("X-DPO-Name", DPO_NAME);
-    res.setHeader("X-Privacy-By-Design", "true");
-    res.setHeader("X-Data-Minimization", "active");
-    res.setHeader("X-Right-To-Erasure", "supported");
-    res.setHeader("X-Data-Portability", "available");
-    res.setHeader("X-GDPR-Token", gdprToken);
-    res.setHeader("X-Consent-Management", "granular");
-    res.setHeader("X-Data-Retention", "policy-compliant");
+    // Enhanced GDPR compliance headers (only if headers not sent)
+    if (!res.headersSent) {
+      res.setHeader("X-GDPR-Compliant", "true");
+      res.setHeader("X-Data-Protection", "EU-GDPR-2025-ENHANCED");
+      res.setHeader("X-Privacy-Policy", "/legal/privacy");
+      res.setHeader("X-Cookie-Policy", "essential-only");
+      res.setHeader("X-DPO-Contact", DPO_CONTACT);
+      res.setHeader("X-DPO-Name", DPO_NAME);
+      res.setHeader("X-Privacy-By-Design", "true");
+      res.setHeader("X-Data-Minimization", "active");
+      res.setHeader("X-Right-To-Erasure", "supported");
+      res.setHeader("X-Data-Portability", "available");
+      res.setHeader("X-GDPR-Token", gdprToken);
+      res.setHeader("X-Consent-Management", "granular");
+      res.setHeader("X-Data-Retention", "policy-compliant");
+    }
     
     // Enhanced GDPR audit trail with encryption
     if (req.method === "GET" && req.path.startsWith("/api/")) {
@@ -104,9 +106,11 @@ export async function gdprMiddleware(req: Request, res: Response, next: NextFunc
     next();
   } catch (error) {
     console.error("GDPR middleware error:", error);
-    // Ensure GDPR compliance even on error
-    res.setHeader("X-GDPR-Compliant", "true");
-    res.setHeader("X-DPO-Contact", DPO_CONTACT);
+    // Ensure GDPR compliance even on error (only if headers not sent)
+    if (!res.headersSent) {
+      res.setHeader("X-GDPR-Compliant", "true");
+      res.setHeader("X-DPO-Contact", DPO_CONTACT);
+    }
     next();
   }
 }

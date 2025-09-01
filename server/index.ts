@@ -2,7 +2,17 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
+import { securityMiddleware } from "./middleware/security";
+import { copyrightMiddleware } from "./middleware/copyright";
+import { gdprMiddleware } from "./middleware/gdpr";
+
 const app = express();
+
+// Apply security middleware FIRST, before any other middleware
+app.use(securityMiddleware);
+app.use(copyrightMiddleware);
+app.use(gdprMiddleware);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
