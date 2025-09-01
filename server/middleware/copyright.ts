@@ -3,7 +3,7 @@ import { storage } from "../storage";
 
 export async function copyrightMiddleware(req: Request, res: Response, next: NextFunction) {
   try {
-    const ipAddress = req.ip;
+    const ipAddress = req.ip || 'unknown';
     const userAgent = req.get("User-Agent") || "";
     
     // Check if IP is blocked for copyright violations

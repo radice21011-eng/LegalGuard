@@ -3,7 +3,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { InteractiveMap } from "./InteractiveMap";
 import { Badge } from "@/components/ui/badge";
 
-const defaultSites = [
+interface Site {
+  code: string;
+  name: string;
+  location: string;
+  focus: string;
+  status: string;
+  progress: number;
+}
+
+const defaultSites: Site[] = [
   {
     code: "MN-CORE",
     name: "Moldova Nouă",
@@ -55,7 +64,7 @@ const defaultSites = [
 ];
 
 export function DevelopmentSites() {
-  const { data: sites = defaultSites, isLoading } = useQuery({
+  const { data: sites = defaultSites, isLoading } = useQuery<Site[]>({
     queryKey: ["/api/projects"],
     staleTime: 5 * 60 * 1000, // 5 minutes
   });

@@ -1,7 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 
-const defaultRevenue = [
+interface RevenueItem {
+  sector: string;
+  description: string;
+  minRevenue: number;
+  maxRevenue: number;
+  icon: string;
+  color: string;
+  percentage: number;
+}
+
+const defaultRevenue: RevenueItem[] = [
   {
     sector: "Fabrica EV + Centru Date",
     description: "Producție, export, servicii AI/Cloud",
@@ -59,7 +69,7 @@ const defaultRevenue = [
 ];
 
 export function Economics() {
-  const { data: revenueData = defaultRevenue, isLoading } = useQuery({
+  const { data: revenueData = defaultRevenue, isLoading } = useQuery<RevenueItem[]>({
     queryKey: ["/api/economics/revenue"],
     staleTime: 10 * 60 * 1000, // 10 minutes
   });

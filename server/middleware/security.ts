@@ -1,5 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 
+// Global type for rate limiting
+declare global {
+  var requestLog: Map<string, number[]> | undefined;
+}
+
 export function securityMiddleware(req: Request, res: Response, next: NextFunction) {
   // Security headers
   res.setHeader("X-Frame-Options", "DENY");
@@ -20,15 +25,15 @@ export function securityMiddleware(req: Request, res: Response, next: NextFuncti
   ].join("; "));
   
   // Rate limiting simulation (basic)
-  const userKey = req.ip + req.get("User-Agent");
+  const userKey = (req.ip || 'unknown') + req.get("User-Agent");
   const now = Date.now();
   
   // Store request timestamps (in production, use Redis)
-  if (!global.requestLog) {
-    global.requestLog = new Map();
+  if (!globalThis.requestLog) {
+    globalThis.requestLog = new Map();
   }
   
-  const requests = global.requestLog.get(userKey) || [];
+  const requests = globalThis.requestLog.get(userKey) || [];
   const recentRequests = requests.filter((time: number) => now - time < 60000); // 1 minute window
   
   if (recentRequests.length > 100) { // 100 requests per minute limit
@@ -39,7 +44,7 @@ export function securityMiddleware(req: Request, res: Response, next: NextFuncti
   }
   
   recentRequests.push(now);
-  global.requestLog.set(userKey, recentRequests);
+  globalThis.requestLog.set(userKey, recentRequests);
   
   next();
 }

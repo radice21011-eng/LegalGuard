@@ -68,7 +68,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         action: "gdpr_request_created",
         resource: "gdpr_request",
         details: { requestId: request.id, type: validatedData.requestType },
-        ipAddress: req.ip,
+        ipAddress: req.ip || 'unknown',
         userAgent: req.get("User-Agent") || "",
       });
       
@@ -83,7 +83,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const violationData = insertCopyrightViolationSchema.parse({
         ...req.body,
-        ipAddress: req.ip,
+        ipAddress: req.ip || 'unknown',
         userAgent: req.get("User-Agent") || "",
       });
       
@@ -94,7 +94,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         action: "copyright_violation_reported",
         resource: "copyright_violation",
         details: { violationId: violation.id, type: violationData.violationType },
-        ipAddress: req.ip,
+        ipAddress: req.ip || 'unknown',
         userAgent: req.get("User-Agent") || "",
       });
       
@@ -134,7 +134,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         action: "contact_form_submitted",
         resource: "contact",
         details: { email, type },
-        ipAddress: req.ip,
+        ipAddress: req.ip || 'unknown',
         userAgent: req.get("User-Agent") || "",
       });
       
