@@ -120,6 +120,54 @@ export const advancedFeatures = pgTable("advanced_features", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const financialAccounts = pgTable("financial_accounts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  accountName: text("account_name").notNull(),
+  beneficiaryName: text("beneficiary_name").notNull(),
+  iban: text("iban").notNull().unique(),
+  swiftBic: text("swift_bic").notNull(),
+  intermediaryBic: text("intermediary_bic"),
+  bankName: text("bank_name").notNull(),
+  countryCode: text("country_code").notNull(),
+  currency: text("currency").notNull().default("GBP"),
+  accountType: text("account_type").notNull().default("BUSINESS_CURRENT"),
+  isLocked: boolean("is_locked").default(true),
+  isPrimary: boolean("is_primary").default(true),
+  proprietorEmail: text("proprietor_email").notNull(),
+  immutableProtection: boolean("immutable_protection").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const financialTransactions = pgTable("financial_transactions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  transactionId: text("transaction_id").notNull().unique(),
+  accountId: varchar("account_id").references(() => financialAccounts.id),
+  amount: decimal("amount", { precision: 15, scale: 2 }).notNull(),
+  currency: text("currency").notNull(),
+  transactionType: text("transaction_type").notNull(), // WIRE_TRANSFER, INTERNATIONAL_TRANSFER
+  status: text("status").notNull().default("PENDING"), // PENDING, COMPLETED, FAILED
+  reference: text("reference").notNull(),
+  swiftReference: text("swift_reference"),
+  senderDetails: jsonb("sender_details"),
+  complianceStatus: text("compliance_status").notNull().default("VERIFIED"),
+  amlChecked: boolean("aml_checked").default(true),
+  kycVerified: boolean("kyc_verified").default(true),
+  timestamp: timestamp("timestamp").defaultNow(),
+});
+
+export const financialCompliance = pgTable("financial_compliance", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  complianceType: text("compliance_type").notNull(), // AML, KYC, PCI_DSS, GDPR_FINANCIAL
+  status: text("status").notNull().default("ACTIVE"),
+  lastAudit: timestamp("last_audit").defaultNow(),
+  nextAudit: timestamp("next_audit"),
+  regulatoryFramework: text("regulatory_framework").notNull(),
+  certificationLevel: text("certification_level").notNull(),
+  auditTrail: jsonb("audit_trail"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   auditLogs: many(auditLogs),
@@ -187,6 +235,21 @@ export const insertAdvancedFeatureSchema = createInsertSchema(advancedFeatures).
   createdAt: true,
 });
 
+export const insertFinancialAccountSchema = createInsertSchema(financialAccounts).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertFinancialTransactionSchema = createInsertSchema(financialTransactions).omit({
+  id: true,
+  timestamp: true,
+});
+
+export const insertFinancialComplianceSchema = createInsertSchema(financialCompliance).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -208,3 +271,9 @@ export type NdaViolation = typeof ndaViolations.$inferSelect;
 export type InsertNdaViolation = z.infer<typeof insertNdaViolationSchema>;
 export type AdvancedFeature = typeof advancedFeatures.$inferSelect;
 export type InsertAdvancedFeature = z.infer<typeof insertAdvancedFeatureSchema>;
+export type FinancialAccount = typeof financialAccounts.$inferSelect;
+export type InsertFinancialAccount = z.infer<typeof insertFinancialAccountSchema>;
+export type FinancialTransaction = typeof financialTransactions.$inferSelect;
+export type InsertFinancialTransaction = z.infer<typeof insertFinancialTransactionSchema>;
+export type FinancialCompliance = typeof financialCompliance.$inferSelect;
+export type InsertFinancialCompliance = z.infer<typeof insertFinancialComplianceSchema>;

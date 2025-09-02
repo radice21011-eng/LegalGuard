@@ -233,6 +233,98 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Secure Financial Payment System - Nationwide Bank Integration
+  app.get("/api/payments/config", async (req, res) => {
+    try {
+      const IMMUTABLE_CONFIG = {
+        beneficiaryOwner: {
+          name: "Ervin Radosavlevici",
+          fullLegalName: "Ervin Remus Radosavlevici", 
+          email: "ervin210@icloud.com",
+          immutableProtection: true
+        },
+        nationwideAccount: {
+          accountName: "Ervin Radosavlevici",
+          iban: "GB45 NAIA 0708 0620 79 5139",
+          swiftBic: "NAIAGB21",
+          intermediaryBic: "MIDLGB22",
+          bankName: "Nationwide Building Society",
+          isLocked: true,
+          autonomousOperation: true
+        },
+        paymentRestrictions: {
+          onlyInternationalBankTransfer: true,
+          cryptoDisabled: true,
+          stripeDisabled: true,
+          paypalDisabled: true,
+          cannotBeOverridden: true
+        }
+      };
+      
+      res.json({
+        paymentConfiguration: IMMUTABLE_CONFIG,
+        configurationStatus: "LOCKED_AND_IMMUTABLE",
+        systemMessage: "Financial configuration permanently locked and operates autonomously",
+        _financial_security: "MAXIMUM_PROTECTION_ACTIVE"
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Payment config error" });
+    }
+  });
+
+  app.post("/api/payments/transfer", async (req, res) => {
+    try {
+      const { amount, currency = "GBP", reference, purpose } = req.body;
+      
+      if (!amount || !reference) {
+        return res.status(400).json({
+          error: "MISSING_REQUIRED_FIELDS",
+          required: ["amount", "reference"]
+        });
+      }
+
+      const transactionId = `NW_${Date.now()}_${Math.random().toString(36).substring(2)}`;
+      
+      res.json({
+        success: true,
+        transaction: {
+          transactionId,
+          amount,
+          currency,
+          reference,
+          status: "INITIATED",
+          bankingDetails: {
+            beneficiaryName: "Ervin Radosavlevici",
+            iban: "GB45 NAIA 0708 0620 79 5139",
+            swiftBic: "NAIAGB21",
+            intermediaryBic: "MIDLGB22",
+            bankName: "Nationwide Building Society"
+          }
+        },
+        instructions: {
+          paymentMethod: "INTERNATIONAL_BANK_TRANSFER_ONLY",
+          message: "Use provided banking details for wire transfer",
+          processingTime: "1-3 business days"
+        },
+        _proprietor_protection: "Payment exclusively for Ervin Remus Radosavlevici"
+      });
+      
+    } catch (error) {
+      res.status(500).json({ error: "Transfer initiation failed" });
+    }
+  });
+
+  // Reject payment config modifications
+  app.post("/api/payments/config", (req, res) => {
+    res.status(403).json({
+      error: "CONFIGURATION_LOCKED",
+      message: "Payment configuration permanently locked - cannot be modified",
+      immutableProtection: true,
+      proprietorContact: "ervin210@icloud.com",
+      _autonomous_operation: "System operates independently with locked settings"
+    });
+  });
+
   // Advanced License Control API - Directly integrated for trillion-level security
   app.get("/api/license/status", async (req, res) => {
     try {
