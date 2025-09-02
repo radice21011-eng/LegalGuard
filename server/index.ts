@@ -2,6 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { privacyMiddleware } from "./middleware/gdpr";
+import { watermarkMiddleware, securityLogMiddleware } from "./middleware/watermark";
 
 const app = express();
 
@@ -10,7 +11,9 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Apply privacy middleware to all routes
+// Apply production-ready security middleware
+app.use(securityLogMiddleware);
+app.use(watermarkMiddleware);
 app.use(privacyMiddleware);
 
 app.use((req, res, next) => {

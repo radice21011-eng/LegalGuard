@@ -9,6 +9,23 @@ interface RevenueItem {
   icon: string;
   color: string;
   percentage: number;
+  realProject?: boolean;
+  owner?: string;
+  status?: string;
+  jobsCreated?: number;
+}
+
+interface RevenueResponse {
+  projections: RevenueItem[];
+  totals: {
+    minRevenue: number;
+    maxRevenue: number;
+    totalJobs: number;
+    realData: boolean;
+    owner: string;
+    copyright: string;
+    productionReady: boolean;
+  };
 }
 
 const defaultRevenue: RevenueItem[] = [
@@ -69,10 +86,14 @@ const defaultRevenue: RevenueItem[] = [
 ];
 
 export function Economics() {
-  const { data: revenueData = defaultRevenue, isLoading } = useQuery<RevenueItem[]>({
+  const { data: revenueResponse, isLoading } = useQuery<RevenueResponse>({
     queryKey: ["/api/economics/revenue"],
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
+
+  // Handle both old array format and new object format for backwards compatibility
+  const revenueData = Array.isArray(revenueResponse?.projections) ? revenueResponse.projections : defaultRevenue;
+  const totals = revenueResponse?.totals;
 
   const formatCurrency = (amount: number) => {
     if (amount >= 1000000000) {
@@ -83,8 +104,9 @@ export function Economics() {
     return `€${amount.toLocaleString()}`;
   };
 
-  const totalMin = revenueData.reduce((sum, item) => sum + item.minRevenue, 0);
-  const totalMax = revenueData.reduce((sum, item) => sum + item.maxRevenue, 0);
+  const totalMin = totals?.minRevenue || revenueData.reduce((sum, item) => sum + item.minRevenue, 0);
+  const totalMax = totals?.maxRevenue || revenueData.reduce((sum, item) => sum + item.maxRevenue, 0);
+  const totalJobs = totals?.totalJobs || 0;
 
   if (isLoading) {
     return (

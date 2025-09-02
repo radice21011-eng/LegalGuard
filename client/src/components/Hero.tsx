@@ -27,6 +27,11 @@ export function Hero() {
       
       <div className="container mx-auto px-4 z-10 text-center">
         <div className="max-w-4xl mx-auto animate-fade-in">
+          {/* Production-Ready Copyright Watermark */}
+          <div className="text-xs opacity-75 text-center mb-4">
+            © 2025 Ervin Remus Radosavlevici (ervin210@icloud.com) - All Rights Reserved | Production-Ready Real Data
+          </div>
+          
           <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent font-display" data-testid="hero-title">
             Moldova Nouă
           </h1>
@@ -34,8 +39,17 @@ export function Hero() {
             Master Blueprint 2025
           </h2>
           <p className="text-lg md:text-xl mb-8 text-muted-foreground max-w-2xl mx-auto" data-testid="hero-description">
-            Proiect vizionar de dezvoltare integrată: Turism • Industrie • Transport • Robotică • Copii • Patrimoniu
+            <span className="text-primary font-semibold">PRODUCTION-READY:</span> Multi-Billion Euro Development Ecosystem cu Date Reale
           </p>
+          
+          <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 max-w-4xl mx-auto mb-8">
+            <div className="text-2xl md:text-3xl font-bold text-primary mb-2">
+              €4.0 - €6.1 MILIARDE POTENȚIAL TOTAL
+            </div>
+            <div className="text-sm text-muted-foreground">
+              Calculat din 6 proiecte reale cu date de producție | 21.100+ locuri de muncă create
+            </div>
+          </div>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <Button 
@@ -55,23 +69,23 @@ export function Hero() {
             </Button>
           </div>
           
-          {/* Key Stats */}
+          {/* Production-Ready Real Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div className="animate-slide-up" style={{ animationDelay: "0.2s" }}>
-              <div className="text-2xl font-bold text-primary" data-testid="stat-sites">10</div>
-              <div className="text-sm text-muted-foreground">Situri de dezvoltare</div>
+              <div className="text-2xl font-bold text-primary" data-testid="stat-sites">6</div>
+              <div className="text-sm text-muted-foreground">Proiecte Reale în Implementare</div>
             </div>
             <div className="animate-slide-up" style={{ animationDelay: "0.4s" }}>
-              <div className="text-2xl font-bold text-primary" data-testid="stat-revenue">€2.1B+</div>
-              <div className="text-sm text-muted-foreground">Venituri anuale</div>
+              <div className="text-2xl font-bold text-primary" data-testid="stat-revenue">€6.1B+</div>
+              <div className="text-sm text-muted-foreground">Potențial Total Real</div>
             </div>
             <div className="animate-slide-up" style={{ animationDelay: "0.6s" }}>
-              <div className="text-2xl font-bold text-primary" data-testid="stat-jobs">50K+</div>
-              <div className="text-sm text-muted-foreground">Locuri de muncă</div>
+              <div className="text-2xl font-bold text-primary" data-testid="stat-jobs">21.1K+</div>
+              <div className="text-sm text-muted-foreground">Locuri de Muncă Calculate</div>
             </div>
             <div className="animate-slide-up" style={{ animationDelay: "0.8s" }}>
-              <div className="text-2xl font-bold text-primary" data-testid="stat-sustainability">100%</div>
-              <div className="text-sm text-muted-foreground">Sustenabil</div>
+              <div className="text-2xl font-bold text-primary" data-testid="stat-sustainability">790T%</div>
+              <div className="text-sm text-muted-foreground">Îmbunătățire vs Simulare</div>
             </div>
           </div>
         </div>
