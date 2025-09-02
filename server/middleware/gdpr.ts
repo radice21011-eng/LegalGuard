@@ -17,9 +17,8 @@ const GDPR_ENHANCED = "2025";
 function quantumEncryptLocalData(data: string): string {
   // Use quantum-resistant local-only encryption, absolutely no remote keys or access
   const quantumKey = crypto.createHash('sha512').update('QUANTUM_PRIVACY_2025_ERR_ZERO_REMOTE').digest();
-  const iv = crypto.randomBytes(32); // Increased IV size for quantum resistance
-  const cipher = crypto.createCipherGCM('aes-256-gcm', quantumKey.slice(0, 32));
-  cipher.setIVLength(32);
+  const iv = crypto.randomBytes(16); // Standard IV size for AES-256-GCM
+  const cipher = crypto.createCipheriv('aes-256-gcm', quantumKey.slice(0, 32), iv);
   
   let encrypted = cipher.update(data, 'utf8', 'hex');
   encrypted += cipher.final('hex');
