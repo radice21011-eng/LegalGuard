@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { privacyMiddleware } from "./middleware/gdpr";
 
 const app = express();
 
@@ -8,6 +9,9 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Apply privacy middleware to all routes
+app.use(privacyMiddleware);
 
 app.use((req, res, next) => {
   const start = Date.now();
