@@ -1,10 +1,9 @@
+modules = ["nodejs-20", "web"]
 run = "npm run dev"
 hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist"]
-modules = ["nodejs-20", "web", "go-1.21", "cpp-clang14"]
 
 [nix]
 channel = "stable-25_05"
-packages = ["go"]
 
 [deployment]
 deploymentTarget = "autoscale"
@@ -38,22 +37,5 @@ author = "agent"
 task = "shell.exec"
 args = "npm run dev"
 waitForPort = 5000
-
-[[workflows.workflow]]
-name = "Quantum C++ Server"
-author = 47117672
-mode = "sequential"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "make clean"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "make"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "make run"
 
 [agent]

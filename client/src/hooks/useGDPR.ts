@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { gdprManager } from "@/lib/gdpr";
 
@@ -8,13 +7,13 @@ export function useGDPR() {
   const [consentData, setConsentData] = useState<any>(null);
 
   useEffect(() => {
-    // Check existing consent with quantum protection
+    // Check existing consent
     const consent = gdprManager.getConsent();
     setHasConsent(consent.hasConsent);
     setConsentData(consent);
     setShowBanner(!consent.hasConsent && !consent.hasRejected);
 
-    // Log page access for quantum GDPR audit (local only)
+    // Log page access for GDPR audit
     gdprManager.logAccess(window.location.pathname);
   }, []);
 
@@ -23,8 +22,8 @@ export function useGDPR() {
     setHasConsent(true);
     setShowBanner(false);
     
-    // Log consent acceptance with quantum protection
-    gdprManager.logAccess('/gdpr/quantum-consent-accepted');
+    // Log consent acceptance
+    gdprManager.logAccess('/gdpr/consent-accepted');
   }, []);
 
   const rejectGDPR = useCallback(() => {
@@ -32,114 +31,83 @@ export function useGDPR() {
     setHasConsent(false);
     setShowBanner(false);
     
-    // Log consent rejection with quantum protection
-    gdprManager.logAccess('/gdpr/quantum-consent-rejected');
+    // Log consent rejection
+    gdprManager.logAccess('/gdpr/consent-rejected');
   }, []);
 
   const showPrivacyPolicy = useCallback(() => {
-    alert(`🔒 POLITICA DE CONFIDENȚIALITATE & GDPR - PROTECȚIE QUANTUM
+    alert(`Politica de Confidențialitate & GDPR:
 
-🛡️ PROTECȚIE QUANTUM A DATELOR:
-• Criptare quantum-rezistentă fără acces remote
-• Protecție GDPR îmbunătățită conform regulamentelor UE 2025
-• ZERO partajare cu terți - toate datele rămân locale
-• Procesare exclusiv locală - fără chei remote SHA
-• Protecție anti-scammer integrată
+🔒 Protecția Datelor Personale:
+• Colectăm doar datele necesare pentru funcționarea site-ului
+• Protecție GDPR completă conform regulamentelor UE
+• Fără partajare cu terți fără consimțământul dvs.
+• Dreptul la ștergerea datelor ("dreptul de a fi uitat")
+• Utilizăm cookies doar esențiale pentru funcționalitate
 
-🔐 SECURITATE QUANTUM:
-• Criptografie post-quantum activă
-• Arhitectură zero-trust implementată
-• Fără vulnerabilități de acces remote
-• Protecție împotriva tuturor formelor de acces neautorizat
-
-📋 DREPTURILE GDPR ÎMBUNĂTĂȚITE:
+📋 Drepturile GDPR:
 • Dreptul la informare și acces la datele personale
-• Dreptul la rectificarea datelor inexacte  
-• Dreptul la portabilitatea datelor (format securizat)
+• Dreptul la rectificarea datelor inexacte
+• Dreptul la portabilitatea datelor
 • Dreptul la restricționarea prelucrării
-• Dreptul la ștergerea completă ("dreptul de a fi uitat")
-
-⚡ TEHNOLOGIE QUANTUM:
-• Procesare locală exclusivă
-• Zero dependențe remote
-• Criptare quantum-rezistentă
-• Protecție maximă a vieții private
 
 📧 Contact DPO: ervin210@icloud.com
-👤 Proprietar: Ervin Remus Radosavlevici
 ⚖️ Timp de răspuns: Maxim 72 de ore
 📅 Procesare cereri: Maxim 30 de zile
-🔒 Tip protecție: Quantum-nivel maxim
 
-Pentru politica completă, vizitați secțiunea Privacy.`);
+Pentru politica completă, vizitați secțiunea Legal.`);
     
-    // Log privacy policy access with quantum protection
-    gdprManager.logAccess('/gdpr/quantum-privacy-policy-viewed');
+    // Log privacy policy access
+    gdprManager.logAccess('/gdpr/privacy-policy-viewed');
   }, []);
 
   const requestDataDeletion = useCallback(async () => {
-    const email = prompt("Pentru ștergerea quantum a datelor, vă rugăm să introduceți adresa de email:");
+    const email = prompt("Pentru ștergerea datelor, vă rugăm să introduceți adresa de email:");
     if (!email) return;
 
     try {
       const response = await fetch("/api/gdpr/request", {
         method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "X-Quantum-Protected": "true",
-          "X-Zero-Remote-Access": "true"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email,
-          requestType: "quantum_deletion",
-          details: { 
-            source: "quantum_gdpr_hook",
-            quantumProtected: true,
-            zeroRemoteAccess: true
-          }
+          requestType: "deletion",
+          details: { source: "gdpr_hook" }
         })
       });
 
       if (response.ok) {
-        alert("✅ Cererea de ștergere quantum a fost înregistrată cu succes!\n\n🔒 Protecție quantum activă\n📧 Veți fi contactat în maxim 30 de zile\n👤 Contact: ervin210@icloud.com");
+        alert("Cererea de ștergere a fost înregistrată. Veți fi contactat în maxim 30 de zile.");
       } else {
-        throw new Error("Failed to submit quantum request");
+        throw new Error("Failed to submit request");
       }
     } catch (error) {
-      alert("⚠️ A apărut o eroare la trimiterea cererii quantum.\n\n📧 Vă rugăm să contactați direct: ervin210@icloud.com\n🔒 Toate datele rămân protejate quantum");
+      alert("A apărut o eroare la trimiterea cererii. Vă rugăm să contactați: ervin210@icloud.com");
     }
   }, []);
 
   const requestDataAccess = useCallback(async () => {
-    const email = prompt("Pentru accesul quantum la date, vă rugăm să introduceți adresa de email:");
+    const email = prompt("Pentru accesul la date, vă rugăm să introduceți adresa de email:");
     if (!email) return;
 
     try {
       const response = await fetch("/api/gdpr/request", {
         method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "X-Quantum-Protected": "true",
-          "X-Zero-Remote-Access": "true"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email,
-          requestType: "quantum_access",
-          details: { 
-            source: "quantum_gdpr_hook",
-            quantumProtected: true,
-            zeroRemoteAccess: true
-          }
+          requestType: "access",
+          details: { source: "gdpr_hook" }
         })
       });
 
       if (response.ok) {
-        alert("✅ Cererea de acces quantum la date a fost înregistrată!\n\n🔒 Protecție quantum activă\n📊 Veți primi datele în format securizat în maxim 30 de zile\n👤 Contact: ervin210@icloud.com");
+        alert("Cererea de acces la date a fost înregistrată. Veți primi datele în maxim 30 de zile.");
       } else {
-        throw new Error("Failed to submit quantum access request");
+        throw new Error("Failed to submit request");
       }
     } catch (error) {
-      alert("⚠️ A apărut o eroare la trimiterea cererii quantum.\n\n📧 Vă rugăm să contactați direct: ervin210@icloud.com\n🔒 Toate datele rămân protejate quantum");
+      alert("A apărut o eroare la trimiterea cererii. Vă rugăm să contactați: ervin210@icloud.com");
     }
   }, []);
 
@@ -151,7 +119,6 @@ Pentru politica completă, vizitați secțiunea Privacy.`);
     rejectGDPR,
     showPrivacyPolicy,
     requestDataDeletion,
-    requestDataAccess,
-    isQuantumProtected: true
+    requestDataAccess
   };
 }
