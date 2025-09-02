@@ -74,6 +74,52 @@ export const copyrightViolations = pgTable("copyright_violations", {
   timestamp: timestamp("timestamp").defaultNow(),
 });
 
+export const proprietorSessions = pgTable("proprietor_sessions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: text("email").notNull(),
+  sessionToken: text("session_token").notNull().unique(),
+  accessLevel: text("access_level").notNull(),
+  ndaConfirmed: boolean("nda_confirmed").default(false),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow(),
+  expiresAt: timestamp("expires_at"),
+  isActive: boolean("is_active").default(true),
+});
+
+export const remoteLockEvents = pgTable("remote_lock_events", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  eventType: text("event_type").notNull(), // LOCK, UNLOCK, VIOLATION, ATTEMPT
+  triggeredBy: text("triggered_by"),
+  reason: text("reason").notNull(),
+  ipAddress: text("ip_address"),
+  details: jsonb("details"),
+  timestamp: timestamp("timestamp").defaultNow(),
+});
+
+export const ndaViolations = pgTable("nda_violations", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  ipAddress: text("ip_address").notNull(),
+  userAgent: text("user_agent"),
+  violationType: text("violation_type").notNull(),
+  suspiciousActivity: jsonb("suspicious_activity"),
+  automaticLockTriggered: boolean("automatic_lock_triggered").default(false),
+  proprietorNotified: boolean("proprietor_notified").default(true),
+  timestamp: timestamp("timestamp").defaultNow(),
+});
+
+export const advancedFeatures = pgTable("advanced_features", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  featureCode: text("feature_code").notNull().unique(),
+  featureName: text("feature_name").notNull(),
+  category: text("category").notNull(),
+  securityLevel: text("security_level").notNull(),
+  proprietorOnly: boolean("proprietor_only").default(true),
+  trillionEnhanced: boolean("trillion_enhanced").default(true),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   auditLogs: many(auditLogs),
@@ -121,6 +167,26 @@ export const insertCopyrightViolationSchema = createInsertSchema(copyrightViolat
   timestamp: true,
 });
 
+export const insertProprietorSessionSchema = createInsertSchema(proprietorSessions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertRemoteLockEventSchema = createInsertSchema(remoteLockEvents).omit({
+  id: true,
+  timestamp: true,
+});
+
+export const insertNdaViolationSchema = createInsertSchema(ndaViolations).omit({
+  id: true,
+  timestamp: true,
+});
+
+export const insertAdvancedFeatureSchema = createInsertSchema(advancedFeatures).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -134,3 +200,11 @@ export type GdprRequest = typeof gdprRequests.$inferSelect;
 export type InsertGdprRequest = z.infer<typeof insertGdprRequestSchema>;
 export type CopyrightViolation = typeof copyrightViolations.$inferSelect;
 export type InsertCopyrightViolation = z.infer<typeof insertCopyrightViolationSchema>;
+export type ProprietorSession = typeof proprietorSessions.$inferSelect;
+export type InsertProprietorSession = z.infer<typeof insertProprietorSessionSchema>;
+export type RemoteLockEvent = typeof remoteLockEvents.$inferSelect;
+export type InsertRemoteLockEvent = z.infer<typeof insertRemoteLockEventSchema>;
+export type NdaViolation = typeof ndaViolations.$inferSelect;
+export type InsertNdaViolation = z.infer<typeof insertNdaViolationSchema>;
+export type AdvancedFeature = typeof advancedFeatures.$inferSelect;
+export type InsertAdvancedFeature = z.infer<typeof insertAdvancedFeatureSchema>;

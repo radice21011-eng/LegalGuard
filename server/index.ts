@@ -3,6 +3,7 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { privacyMiddleware } from "./middleware/gdpr";
 import { watermarkMiddleware, securityLogMiddleware } from "./middleware/watermark";
+import { remoteLockMiddleware, ndaViolationMiddleware } from "./middleware/remoteLock";
 
 const app = express();
 
@@ -11,8 +12,10 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Apply production-ready security middleware
+// Apply trillion-level enhanced security middleware
 app.use(securityLogMiddleware);
+app.use(remoteLockMiddleware);
+app.use(ndaViolationMiddleware);
 app.use(watermarkMiddleware);
 app.use(privacyMiddleware);
 
